@@ -59,21 +59,23 @@ def center_of_texts(path):
 
     leftmost = tuple(hull[hull[:,:,0].argmin()][0])
     rightmost = tuple(hull[hull[:,:,0].argmax()][0])
+    print("leftmost: ",leftmost)
+    print("rigthmost: ",rightmost)
     center = (int((leftmost[0] + rightmost[0])/2), int((leftmost[1] + rightmost[1])/2))
-    print(center)
-    #save_images(img, mask, edges, filtered, himg, final)
-    return center
+    #cv2.circle(himg, center, 5, (0,0,255), -1)
+    save_images(mask, edges, filtered, himg, final)
     #leftmost = (leftmost[0] - 5, leftmost[1] + 5)
     #rigtmost = (rightmost[0] + 5, rightmost[1] + 5)
     #print(leftmost)
     #print(rightmost)
     #print(center)
-    #cv2.circle(himg, leftmost, 5, (0,0,255), -1)
-    #cv2.circle(himg, rightmost, 5, (0,0,255), -1)
-    #cv2.circle(himg, center, 5, (0,0,255), -1)
+    cv2.circle(himg, leftmost, 5, (0,0,255), -1)
+    cv2.circle(himg, rightmost, 5, (0,0,255), -1)
+    cv2.circle(himg, center, 5, (0,0,255), -1)
+    return center
 
 
-def save_images(img, mask, edges, filtered, himg, final):
+def save_images(mask, edges, filtered, himg, final):
     cv2.imwrite('receipt_mask.jpg', mask)
     cv2.imwrite('receipt_edges.jpg', edges)
     cv2.imwrite('receipt_filtered_edges.jpg', filtered)
@@ -109,5 +111,5 @@ def crop_image(path,center):
         cv2.destroyAllWindows()
 
 #borrar
-center = center_of_texts('test4.png')
-crop_image('test4.png',center)
+center = center_of_texts('test6.png')
+crop_image('test6.png',center)
