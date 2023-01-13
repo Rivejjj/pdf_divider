@@ -29,6 +29,7 @@ def main(): #BINARY FUNCIONA, ESTO NO
         print("width: ",page.width)
         print("ratio: ",ratio)
         if ratio > 0.75 or ratio < 0.25:
+            print("strange ratio")
             ratio = 0.5
 
         writer.addpages(splitpage(pages_reader[index],ratio))

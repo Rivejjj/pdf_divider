@@ -9,7 +9,7 @@ def read_image(path):
 
 # get edges
 def get_edges(img):
-    canny = cv2.Canny(img, 50, 200)
+    canny = cv2.Canny(img, 200, 300)
     return canny
 
 # get contours
@@ -23,7 +23,7 @@ def filter_small_regions(contours,canny):
     cimg = np.zeros_like(canny)
     for cntr in contours:
         area = cv2.contourArea(cntr)
-        if area > 20:
+        if area > 50:
             cv2.drawContours(cimg, [cntr], 0, 255, 1)
     return cimg
 
@@ -55,7 +55,7 @@ def center_of_texts(path):
     filtered = filter_small_regions(contours,edges)
     himg,hull = get_convex_hull(filtered, img)
     mask = get_convex_hull_mask(hull, filtered)
-    final = mask_image(img, mask)
+    #final = mask_image(img, mask)
 
     leftmost = tuple(hull[hull[:,:,0].argmin()][0])
     rightmost = tuple(hull[hull[:,:,0].argmax()][0])
@@ -63,15 +63,15 @@ def center_of_texts(path):
     print("rigthmost: ",rightmost)
     center = (int((leftmost[0] + rightmost[0])/2), int((leftmost[1] + rightmost[1])/2))
     #cv2.circle(himg, center, 5, (0,0,255), -1)
-    save_images(mask, edges, filtered, himg, final)
+    #save_images(mask, edges, filtered, himg, final)
     #leftmost = (leftmost[0] - 5, leftmost[1] + 5)
     #rigtmost = (rightmost[0] + 5, rightmost[1] + 5)
     #print(leftmost)
     #print(rightmost)
     #print(center)
-    cv2.circle(himg, leftmost, 5, (0,0,255), -1)
-    cv2.circle(himg, rightmost, 5, (0,0,255), -1)
-    cv2.circle(himg, center, 5, (0,0,255), -1)
+    #cv2.circle(himg, leftmost, 5, (0,0,255), -1)
+    #cv2.circle(himg, rightmost, 5, (0,0,255), -1)
+    #cv2.circle(himg, center, 5, (0,0,255), -1)
     return center
 
 
@@ -111,5 +111,5 @@ def crop_image(path,center):
         cv2.destroyAllWindows()
 
 #borrar
-center = center_of_texts('test6.png')
-crop_image('test6.png',center)
+#center = center_of_texts('test6.png')
+#crop_image('test6.png',center)
