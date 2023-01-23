@@ -4,7 +4,6 @@ import numpy as np
 # Read image
 def read_image(path):
     img = cv2.imread(path)
-    hh, ww = img.shape[:2]
     return img
 
 # get edges
@@ -27,14 +26,6 @@ def filter_small_regions(contours,canny):
             cv2.drawContours(cimg, [cntr], 0, 255, 1)
     return cimg
 
-# get convex hull and draw on input
-def get_convex_hull(cimg, img):
-    points = np.column_stack(np.where(cimg.transpose() > 0))
-    hull = cv2.convexHull(points)
-    himg = img.copy()
-    cv2.polylines(himg, [hull], True, (0,0,255), 1)
-    return himg, hull
-
 # draw convex hull as filled mask
 def get_convex_hull_mask(hull, cimg):
     mask = np.zeros_like(cimg, dtype=np.uint8)
@@ -47,31 +38,28 @@ def mask_image(img, mask):
     mimg = cv2.bitwise_and(mimg, mimg, mask=mask)
     return mimg
 
+def get_left_right(cimg):
+    points = np.column_stack(np.where(cimg.transpose() > 0))
+    hull = cv2.convexHull(points)
+
+    left = {}
+    right = {}
+
+    left = np.min(hull, axis = 0)
+    right = np.max(hull, axis = 0)
+
+    return tuple(left[0]),tuple(right[0])
 
 def center_of_texts(path):
     img = read_image(path)
     edges = get_edges(img)
     contours = get_contours(edges)
     filtered = filter_small_regions(contours,edges)
-    himg,hull = get_convex_hull(filtered, img)
-    mask = get_convex_hull_mask(hull, filtered)
-    #final = mask_image(img, mask)
+    leftmost,rightmost = get_left_right(filtered)
 
-    leftmost = tuple(hull[hull[:,:,0].argmin()][0])
-    rightmost = tuple(hull[hull[:,:,0].argmax()][0])
     print("leftmost: ",leftmost)
     print("rigthmost: ",rightmost)
     center = (int((leftmost[0] + rightmost[0])/2), int((leftmost[1] + rightmost[1])/2))
-    #cv2.circle(himg, center, 5, (0,0,255), -1)
-    #save_images(mask, edges, filtered, himg, final)
-    #leftmost = (leftmost[0] - 5, leftmost[1] + 5)
-    #rigtmost = (rightmost[0] + 5, rightmost[1] + 5)
-    #print(leftmost)
-    #print(rightmost)
-    #print(center)
-    #cv2.circle(himg, leftmost, 5, (0,0,255), -1)
-    #cv2.circle(himg, rightmost, 5, (0,0,255), -1)
-    #cv2.circle(himg, center, 5, (0,0,255), -1)
     return center
 
 
@@ -79,7 +67,7 @@ def save_images(mask, edges, filtered, himg, final):
     cv2.imwrite('receipt_mask.jpg', mask)
     cv2.imwrite('receipt_edges.jpg', edges)
     cv2.imwrite('receipt_filtered_edges.jpg', filtered)
-    cv2.imwrite('receipt_hull.jpg', himg)
+    cv2.imwrite('receipt_himg.jpg', himg)
     cv2.imwrite('receipt_final.jpg', final)
     cv2.imshow('canny', edges)
     cv2.imshow('cimg', filtered)
@@ -104,12 +92,12 @@ def crop_image(path,center):
         cv2.imshow("cropped_right", cropped_image_right)
         
         # Save the cropped image
-        cv2.imwrite("Cropped_image_left.jpg", cropped_image_left)
-        cv2.imwrite("Cropped_image_right.jpg", cropped_image_right)
+        #cv2.imwrite("Cropped_image_left.jpg", cropped_image_left)
+        #cv2.imwrite("Cropped_image_right.jpg", cropped_image_right)
         
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
 #borrar
-#center = center_of_texts('test6.png')
-#crop_image('test6.png',center)
+#center = center_of_texts('tests/test6.png')
+#crop_image('tests/test6.png',center)

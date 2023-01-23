@@ -1,5 +1,4 @@
 import pdf2image
-import numpy as np
 import os
 import binary
 from pdfrw import PdfReader, PdfWriter, PageMerge
@@ -11,10 +10,11 @@ def splitpage(file, place):
 		yield page.render()
 
 def main(): #BINARY FUNCIONA, ESTO NO
-    pages = pdf2image.convert_from_path("safford.pdf", 500)
+    cwd = os.getcwd()
+    pages = pdf2image.convert_from_path("vegas.pdf", 500)
     print(len(pages))
-
-    file = "safford.pdf"
+    # 1 min para 37 paginas
+    file = "vegas.pdf"
     writer = PdfWriter()
     pages_reader = PdfReader(file).pages
     index = 0
@@ -28,9 +28,9 @@ def main(): #BINARY FUNCIONA, ESTO NO
         ratio = center[0]/page.width
         print("width: ",page.width)
         print("ratio: ",ratio)
-        if ratio > 0.75 or ratio < 0.25:
-            print("strange ratio")
-            ratio = 0.5
+        #if ratio > 0.75 or ratio < 0.25:
+        #    print("strange ratio")
+        #    ratio = 0.5
 
         writer.addpages(splitpage(pages_reader[index],ratio))
         index += 1
